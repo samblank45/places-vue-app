@@ -1,9 +1,13 @@
 <template>
   <div class="home">
   
+   <ul>
+      <li v-for="error in errors"> {{ error }} </li>
+  </ul>
+
   <div>
-    Name: <input type="text" v-model="NewPlaceName"> <br>
-    Address: <input type="text" v-model="NewPlaceAddress"> <br>
+    Name: <input type="text" v-model="NewPlaceName" required> <br>
+    Address: <input type="text" v-model="NewPlaceAddress" required> <br>
     <button v-on:click="createPlace()">Create</button>
   </div>
 
@@ -17,9 +21,9 @@
     <form method="dialog">
       <h1>name: <input type="text" v-model="currentPlace.name"></h1>
       <p>address: <input type="text" v-model="currentPlace.address"></p>
-      <button>close</button>
       <button v-on:click="updatePlace(currentPlace)">Update</button>
       <button v-on:click="destroyPlace(currentPlace)">destroy</button>
+      <button>close</button>
     </form>
   </dialog>
 
@@ -31,6 +35,7 @@ import axios from "axios";
 export default {
   data: function() {
     return {
+      errors: [],
       places: [],
       currentPlace: {},
       updateErrors: [],
@@ -51,7 +56,7 @@ export default {
         address: this.NewPlaceAddress
       };
       axios
-        .post("api/places", params)
+        .post("/api/places", params)
         .then(response => {
           console.log("success", response.data);
           this.places.push(response.data);
@@ -62,9 +67,9 @@ export default {
         });
     },
     showPlace: function(place) {
+      console.log(place);
       this.currentPlace = place;
       document.querySelector("#place-details").showModal();
-      console.log(place);
     },
     updatePlace: function(place) {
       var params = {
@@ -85,7 +90,7 @@ export default {
       axios.delete(`/api/places/${place.id}`).then(response => {
         console.log("successfully destroyed", response.data);
         var index = this.places.indexOf(place);
-        this.products.splice(index, 1);
+        this.places.splice(index, 1);
       });
     }
   }
